@@ -6,7 +6,7 @@ Built in the hope of building an easy way to add custom cards to a simulation an
 
 Currently in the stage of building out the lexer to tokenize all current cards correctly.
 
-In it's current state, the lexer is only able to parse Leeroy Jenkins and any cards that have the same vocabulary as an example.
+In it's current state, the lexer is only able to lex cards from the Basic Set or cards that have the same vocabulary.
 
 ## Try it Out
 
@@ -24,15 +24,14 @@ From `sys.stdin`:
 
 ```bash
 echo "Charge. Battlecry: Summon two 1/1 Whelps for your opponent." | python3 main.py
-('Charge.', 'ABILITY')
+('Charge', 'ABILITY')
 ('Battlecry:', 'EVENT')
-('Summon', 'SUMMON')
+('Summon', 'ACTION')
 ('two', 'INT')
-('1/1', 'STATS')
+('1/1', 'MODIFIER')
 ('Whelps', 'ID')
-('for your', 'POINTER')
-('opponent', 'PLAYER')
-('.', 'END')
+('your', 'MODIFIER')
+('opponent', 'TARGET')
 ```
 
 From a file:
@@ -40,15 +39,14 @@ From a file:
 ```bash
 echo "Charge. Battlecry: Summon two 1/1 Whelps for your opponent." > LeeroyJenkins.card
 python3 main.py LeeroyJenkins.card
-('Charge.', 'ABILITY')
+('Charge', 'ABILITY')
 ('Battlecry:', 'EVENT')
-('Summon', 'SUMMON')
+('Summon', 'ACTION')
 ('two', 'INT')
-('1/1', 'STATS')
+('1/1', 'MODIFIER')
 ('Whelps', 'ID')
-('for your', 'POINTER')
-('opponent', 'PLAYER')
-('.', 'END')
+('your', 'MODIFIER')
+('opponent', 'TARGET')
 ```
 
 Feel free to help out and contribute!
