@@ -10,12 +10,18 @@ In it's current state, the lexer is only able to lex cards from the Basic Set or
 
 ## Try it Out
 
+
 Clone this repository:
 
 ```bash
 git clone https://github.com/kajchang/Dalaran.git
 Cloning into 'Dalaran'...
 cd Dalaran
+```
+
+Install [fireplace](https://github.com/jleclanche/fireplace), a Python implementation of Hearthstone:
+```bash
+pip3 install -e git+https://github.com/kajchang/fireplace.git#egg=fireplace
 ```
 
 `main.py` can lex from `sys.stdin`, and it can also read from a file.
