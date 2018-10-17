@@ -1,18 +1,13 @@
 import unittest
 
-import sys
-
 import json
 import os
 
 from .utils import *
 
-sys.path.append('..')
+from Dalaran.lexer import lex, token_exprs
 
-from Dalaran.lexer.lexer import lex
-from Dalaran.lexer.tokens import token_exprs
-
-from Dalaran.parser.parser import parse_card, register_card
+from Dalaran.parser import parse_card, register_card
 
 
 class Test_Cards(unittest.TestCase):
