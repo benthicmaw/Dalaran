@@ -26,4 +26,5 @@ if __name__ == '__main__':
     card = parse_card(card_data['name'], card_data['type'], card_data['cost'], card_data['class'],
                       tokens, card_data.get('attack', None), card_data.get('health', None))
 
-    print(card)
+    for tag in card.tags:
+        print('{}: {}'.format(repr(tag), repr(card.tags[tag])))
