@@ -1,9 +1,0 @@
-{
-    "name": "Reckless Rocketeer",
-    "type": "Minion",
-    "class": "Neutral",
-    "cost": 6,
-    "attack": 5,
-    "health": 2,
-    "text": "Charge"
-}
