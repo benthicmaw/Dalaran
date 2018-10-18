@@ -1,9 +1,8 @@
 import unittest
 
-from .utils import *
+from Dalaran.utils import *
 
 from Dalaran.lexer import lex, token_exprs
-
 from Dalaran.parser import parse_card, register_card
 
 

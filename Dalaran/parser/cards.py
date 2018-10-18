@@ -26,7 +26,11 @@ def parse_tokens(type_, tokens):
 
         elif token_type == 'ACTION':
             if type_ == CardType.SPELL:
-                attributes['play'] = parse_action(token, tokens)
+                if attributes.get('play'):
+                    attributes['play'] = attributes['play'] + (parse_action(token, tokens),)
+
+                else:
+                    attributes['play'] = (parse_action(token, tokens),)
 
     return tags, attributes
 
