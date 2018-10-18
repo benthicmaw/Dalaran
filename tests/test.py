@@ -32,29 +32,29 @@ class Test_Cards(unittest.TestCase):
         register_card(card)
 
         game = prepare_game(CardClass.WARRIOR, CardClass.WARRIOR)
-        rocketeer = game.player1.give(card.__name__)
+        charge_boi = game.player1.give(card.__name__)
 
-        rocketeer.play()
+        charge_boi.play()
 
-        self.assertTrue(rocketeer.can_attack())
+        self.assertTrue(charge_boi.can_attack())
 
-        rocketeer.attack(game.current_player.opponent.hero)
+        charge_boi.attack(game.current_player.opponent.hero)
 
-        self.assertTrue(rocketeer.can_attack())
+        self.assertTrue(charge_boi.can_attack())
 
-        rocketeer.attack(game.current_player.opponent.hero)
+        charge_boi.attack(game.current_player.opponent.hero)
 
-        self.assertFalse(rocketeer.can_attack())
+        self.assertFalse(charge_boi.can_attack())
 
-    def test_card_actions(self):
+    def test_controller_actions(self):
         tokens = lex('Draw a Card', token_exprs)
-        card_1 = parse_card('a', 'Spell', 2, 'Mage', tokens)
+        card_1 = parse_card('a', CardType.SPELL, 2, CardClass.MAGE, tokens)
 
         tokens = lex('Draw two Cards', token_exprs)
-        card_2 = parse_card('two', 'Spell', 3, 'Mage', tokens)
+        card_2 = parse_card('two', CardType.SPELL, 3, CardClass.MAGE, tokens)
 
         tokens = lex('Draw 2 Cards', token_exprs)
-        card_3 = parse_card('2', 'Spell', 3, 'Mage', tokens)
+        card_3 = parse_card('2', CardType.SPELL, 3, CardClass.MAGE, tokens)
 
         register_card(card_1)
         register_card(card_2)
@@ -85,3 +85,19 @@ class Test_Cards(unittest.TestCase):
 
         self.assertEqual(len(game.current_player.hand), 9)
         self.assertEqual(game.current_player.cards_drawn_this_turn, 6)
+
+    def test_targeted_actions(self):
+        tokens = lex('Deal 5 Damage', token_exprs)
+        card = parse_card('Bolt Bolt', CardType.SPELL, 3, CardClass.MAGE, tokens)
+
+        register_card(card)
+
+        game = prepare_game(CardClass.MAGE, CardClass.MAGE)
+
+        bolt_bolt = game.player1.give(card.__name__)
+
+        self.assertEqual(game.current_player.opponent.hero.health, 30)
+
+        bolt_bolt.play(target=game.current_player.opponent.hero)
+
+        self.assertEqual(game.current_player.opponent.hero.health, 25)
