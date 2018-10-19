@@ -21,16 +21,18 @@ def parse_tokens(type_, tokens):
         token_value = token[0]
 
         if token_type == 'ABILITY':
-            if type_ == CardType.MINION:
-                tags[GameTag[token_value.upper()]] = True
+            assert type_ == CardType.MINION
+                
+            tags[GameTag[token_value.upper()]] = True
 
         elif token_type == 'ACTION':
-            if type_ == CardType.SPELL:
-                if attributes.get('play'):
-                    attributes['play'] = attributes['play'] + (parse_action(token, tokens),)
+            assert type_ == CardType.SPELL
 
-                else:
-                    attributes['play'] = (parse_action(token, tokens),)
+            if attributes.get('play'):
+                attributes['play'] = attributes['play'] + (parse_action(token, tokens),)
+
+            else:
+                attributes['play'] = (parse_action(token, tokens),)
 
     return tags, attributes
 
@@ -40,6 +42,8 @@ def parse_card(name, type_, cost, class_, tokens, atk=None, health=None):
     class_ = class_ if isinstance(
         class_, CardClass) else CardClass[class_.upper()]
 
+    assert isinstance(cost, int)
+
     tags, attributes = parse_tokens(type_, tokens)
 
     tags[GameTag.CARDNAME] = name
@@ -48,9 +52,11 @@ def parse_card(name, type_, cost, class_, tokens, atk=None, health=None):
     tags[GameTag.CLASS] = class_
 
     if atk is not None:
+        assert isinstance(atk, int)
         tags[GameTag.ATK] = atk
 
     if health is not None:
+        assert isinstance(atk, int)
         tags[GameTag.HEALTH] = health
 
     values = {'tags': tags}
