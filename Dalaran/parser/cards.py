@@ -8,11 +8,11 @@ def parse_tokens(type_, tokens):
     tags = {}
     attributes = {}
 
-    tokens = iter(tokens)
+    tokens = bidirectional_iterator(tokens)
 
     while True:
         try:
-            token = next(tokens)
+            token = tokens.next()
 
         except StopIteration:
             break

@@ -11,10 +11,10 @@ def parse_action(token, iterator, **kwargs):
     action = globals().get(token_value.lower().capitalize(), None)
     assert isinstance(action, ActionMeta)
 
-    next_token = next(iterator)
+    token = iterator.next()
 
-    token_type = next_token[1]
-    token_value = next_token[0]
+    token_type = token[1]
+    token_value = token[0]
 
     assert token_type == 'FIELD' or token_type == 'INT'
 
@@ -28,24 +28,53 @@ def parse_action(token, iterator, **kwargs):
         else:
             amount = word_to_num(token_value)
 
-        next_token = next(iterator)
+        token = iterator.next()
 
-        token_type = next_token[1]
-        token_value = next_token[0]
+        token_type = token[1]
+        token_value = token[0]
 
         assert token_type == 'FIELD' or token_type == 'TARGET'
 
         if action is Draw or action is Discard:
-            assert token_value.lower().startswith('card')
+            assert token_value.casefold().startswith('card')
 
         elif action is Silence or action is Destroy:
-            assert token_value.lower().startswith('minion')
+            assert token_value.casefold().startswith('minion')
 
         elif action is Heal:
-            assert token_value.lower() == 'health'
+            assert token_value.casefold() == 'health'
 
         elif action is Deal:
-            assert token_value.lower() == 'damage'
+            assert token_value.casefold() == 'damage'
+
+        try:
+            token = iterator.next()
+
+            token_type = token[1]
+            token_value = token[0]
+
+            if token_type == 'MODIFIER':
+                modifier = token_value
+
+                try:
+                    token = iterator.next()
+
+                    token_type = token[1]
+                    token_value = token[0]
+
+                    targets = token_value
+
+                except StopIteration as e:
+                    raise e
+
+                target = globals().get('_'.join((modifier, targets),).upper(), None)
+                assert isinstance(target, SetOpSelector)
+
+            else:
+                iterator.prev()
+
+        except StopIteration:
+            pass
 
     if target is None:
         if action is Draw or action is Discard:

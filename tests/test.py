@@ -37,11 +37,11 @@ class Test_Cards(unittest.TestCase):
 
         self.assertTrue(charge_boi.can_attack())
 
-        charge_boi.attack(game.current_player.opponent.hero)
+        charge_boi.attack(game.player2.hero)
 
         self.assertTrue(charge_boi.can_attack())
 
-        charge_boi.attack(game.current_player.opponent.hero)
+        charge_boi.attack(game.player2.hero)
 
         self.assertFalse(charge_boi.can_attack())
 
@@ -95,8 +95,58 @@ class Test_Cards(unittest.TestCase):
 
         bolt_bolt = game.player1.give(card.__name__)
 
-        self.assertEqual(game.current_player.opponent.hero.health, 30)
+        self.assertEqual(game.player2.hero.health, 30)
 
-        bolt_bolt.play(target=game.current_player.opponent.hero)
+        bolt_bolt.play(target=game.player2.hero)
 
-        self.assertEqual(game.current_player.opponent.hero.health, 25)
+        self.assertEqual(game.player2.hero.health, 25)
+
+    def test_multiple_actions(self):
+        tokens = lex('Deal 10 Damage. Draw 5 Cards.', token_exprs)
+        card = parse_card('Weak Spell', 'Spell', 1, 'Mage', tokens)
+
+        register_card(card)
+
+        game = prepare_game(CardClass.MAGE, CardClass.MAGE)
+
+        weak_spell = game.player1.give(card.__name__)
+
+        self.assertEqual(len(game.player1.hand), 5)
+        self.assertEqual(game.player2.hero.health, 30)
+
+        weak_spell.play(target=game.player2.hero)
+
+        self.assertEqual(len(game.player1.hand), 9)
+        self.assertEqual(game.player2.hero.health, 20)
+
+    def test_area_of_effect_actions(self):
+        tokens = lex('Deal 5 Damage to all characters', token_exprs)
+        card_1 = parse_card('Big Splash', CardType.SPELL, 1, CardClass.MAGE, tokens)
+
+        card_2 = parse_card('Placeholder', CardType.MINION, 0, CardClass.NEUTRAL, [], 1, 1)
+
+        register_card(card_1)
+        register_card(card_2)
+
+        game = prepare_game(CardClass.MAGE, CardClass.MAGE)
+
+        placeholder_1 = game.player1.give(card_2.__name__)
+        placeholder_2 = game.player1.give(card_2.__name__)
+
+        placeholder_1.play()
+        placeholder_2.play()
+
+        game.end_turn()
+
+        self.assertEqual(game.player1.hero.health, 30)
+        self.assertEqual(game.player2.hero.health, 30)
+
+        big_splash = game.player2.give(card_1.__name__)
+
+        big_splash.play()
+
+        self.assertEqual(game.player1.hero.health, 25)
+        self.assertEqual(game.player2.hero.health, 25)
+
+        self.assertTrue(placeholder_1.dead)
+        self.assertTrue(placeholder_2.dead)
