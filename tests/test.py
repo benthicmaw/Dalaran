@@ -150,3 +150,18 @@ class Test_Cards(unittest.TestCase):
 
         self.assertTrue(placeholder_1.dead)
         self.assertTrue(placeholder_2.dead)
+
+    def test_armor(self):
+        tokens = lex('Gain 5000 Armor', token_exprs)
+        card = parse_card('Shield Up', CardType.SPELL, 0, CardClass.WARRIOR, tokens)
+
+        register_card(card)
+
+        game = prepare_game(CardClass.WARRIOR, CardClass.WARRIOR)
+        shield_up = game.player1.give(card.__name__)
+
+        self.assertEqual(game.player1.hero.armor, 0)
+
+        shield_up.play()
+
+        self.assertEqual(game.player1.hero.armor, 5000)

@@ -2,6 +2,7 @@ from fireplace.cards.utils import *
 from .utils import *
 
 Deal = Hit
+Gain = TargetedAction
 
 
 def parse_action(token, iterator, **kwargs):
@@ -19,6 +20,8 @@ def parse_action(token, iterator, **kwargs):
     assert token_type == 'FIELD' or token_type == 'INT'
 
     if token_type == 'FIELD':
+        assert action is Draw or action is Discard or action is Silence or action is Destroy
+
         amount = 1
 
     elif token_type == 'INT':
@@ -46,6 +49,17 @@ def parse_action(token, iterator, **kwargs):
 
         elif action is Deal:
             assert token_value.casefold() == 'damage'
+
+        elif action is Gain:
+            assert token_value.casefold() == 'armor' # or token_value.casefold() == 'mana crystals'
+
+            if token_value.casefold() == 'armor':
+                action = GainArmor
+
+            """
+            else if token_value == 'mana crystals':
+                action = GainMana()
+            """
 
         try:
             token = iterator.next()
@@ -84,10 +98,14 @@ def parse_action(token, iterator, **kwargs):
                 action is Heal or action is Deal):
             target = TARGET
 
+        elif action is GainArmor:
+            target = FRIENDLY_HERO
+
+
     if action is Draw or action is Discard:
         return action(target) * amount
 
-    elif action is Deal or action is Heal:
+    elif action is Deal or action is Heal or action is GainArmor:
         return action(target, amount)
 
     elif action is Silence or action is Destroy:
