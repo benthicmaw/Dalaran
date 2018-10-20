@@ -1,7 +1,7 @@
 from fireplace.cards.utils import *
 from .utils import *
 
-from .parsers import *
+from .parse_patterns import *
 
 
 def parse_tokens(type_, tokens):
@@ -33,6 +33,27 @@ def parse_tokens(type_, tokens):
 
             else:
                 attributes['play'] = (parse_action(token, tokens),)
+
+        elif token_type == 'TARGET':
+            assert type_ == CardType.SPELL
+
+            target = globals().get(token_value.upper(), None)
+            assert isinstance(target, SetOpSelector)
+
+            token = tokens.next()
+
+            token_type = token[1]
+            token_value = token[0]
+
+            assert token_type == 'ACTION'
+
+            if token_type == 'ACTION':
+                if attributes.get('play'):
+                    attributes['play'] = attributes['play'] + (parse_action(token, tokens, target=target),)
+
+                else:
+                    attributes['play'] = (parse_action(token, tokens, target=target),)
+
 
     return tags, attributes
 

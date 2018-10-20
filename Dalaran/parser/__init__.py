@@ -1,1 +1,1 @@
-from .cards import *
+from .parser import *

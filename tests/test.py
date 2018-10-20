@@ -165,3 +165,18 @@ class Test_Cards(unittest.TestCase):
         shield_up.play()
 
         self.assertEqual(game.player1.hero.armor, 5000)
+
+    def test_leading_target(self):
+        tokens = lex('Your opponent draws two cards', token_exprs)
+        card = parse_card('Library', CardType.SPELL, 1, CardClass.DRUID, tokens)
+
+        register_card(card)
+
+        game = prepare_game(CardClass.DRUID, CardClass.DRUID)
+        library = game.player1.give(card.__name__)
+
+        self.assertEqual(len(game.player2.hand), 5)
+
+        library.play()
+
+        self.assertEqual(len(game.player2.hand), 7)

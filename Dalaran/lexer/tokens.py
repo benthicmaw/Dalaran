@@ -27,7 +27,7 @@ token_exprs = [
     (r'[Gg]ain', ACTION),
     (r'[Hh]ave', ACTION),
     (r'[Cc]hange', ACTION),
-    (r'[Tt]akes?', ACTION),
+    (r'[Tt]ake', ACTION),
     (r'[Pp]ut', ACTION),
     (r'[Cc]opy', ACTION),
     (r'[Tt]ransform', ACTION),
@@ -96,6 +96,8 @@ token_exprs = [
     (r'and', None),
     (r'for', None),
     (r'an|a', None),
+    (r'[Yy]our', None),
+    (r's', None),
     (r'[0-9]+', INT),
     (r'[A-Za-z][A-Za-z0-9_]*', ID),
 ]
