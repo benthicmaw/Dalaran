@@ -1,2 +1,6 @@
-__pycache__
-*.card
+__pycache__/
+src/fireplace/
+dist/
+build/
+pip-delete-this-directory.txt
+*.egg-info

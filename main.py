@@ -2,12 +2,11 @@
 
 import sys
 
-import lexer
-import tokens
+from Dalaran.lexer import lex, token_exprs
 
 
-def hearthstone_lex(characters, tokens_exprs=tokens.token_exprs):
-    return lexer.lex(characters, tokens_exprs)
+def hearthstone_lex(characters, token_exprs_=token_exprs):
+    return lex(characters, token_exprs_)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,11 @@
+language: python
+
+python: 
+  - "3.6"
+
+install:
+  - python3 setup.py install
+  - pip3 install -e git+https://github.com/kajchang/fireplace.git#egg=fireplace
+
+script:
+  python3 -m unittest discover
