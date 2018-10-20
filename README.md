@@ -1,6 +1,6 @@
 # Dalaran
 
-[![Build Status](https://travis-ci.org/kajchang/Dalaran.svg?branch=Simulator%2FParser)](https://travis-ci.org/kajchang/Dalaran)
+[![Build Status](https://travis-ci.org/kajchang/Dalaran.svg?branch=master)](https://travis-ci.org/kajchang/Dalaran)
 
 Basic Lexer and Parser for Hearthstone Simulations.
 
