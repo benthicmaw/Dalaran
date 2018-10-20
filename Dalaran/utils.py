@@ -1,5 +1,3 @@
-# https://github.com/jleclanche/fireplace/blob/master/tests/utils.py
-
 import random
 
 from hearthstone.enums import *

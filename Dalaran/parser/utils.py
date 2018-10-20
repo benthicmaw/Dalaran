@@ -5,7 +5,6 @@ def word_to_num(word):
     return numbers[word]
 
 
-# https://stackoverflow.com/questions/2777188/making-a-python-iterator-go-backwards
 class bidirectional_iterator(object):
     def __init__(self, collection):
         self.collection = collection
