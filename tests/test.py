@@ -180,3 +180,19 @@ class Test_Cards(unittest.TestCase):
         library.play()
 
         self.assertEqual(len(game.player2.hand), 7)
+
+    def test_mana_crystals(self):
+        tokens = lex('Gain 9 mana crystals', token_exprs)
+        card = parse_card('Steroids', CardType.SPELL, 0, CardClass.DRUID, tokens)
+
+        register_card(card)
+
+        game = prepare_game(game_class=BaseGame)
+        steroids = game.player1.give(card.__name__)
+
+        self.assertEqual(game.player1.max_mana, 1)
+
+        steroids.play()
+
+        self.assertEqual(game.player1.max_mana, 10)
+

@@ -9,7 +9,8 @@ def parse_action(token, iterator, **kwargs):
     token_value = token[0]
 
     target = kwargs.get('target', None)
-    action = globals().get(token_value.lower().capitalize(), None)
+
+    action = parse_action_token(token_value)
     assert isinstance(action, ActionMeta)
 
     token = iterator.next()
@@ -17,81 +18,87 @@ def parse_action(token, iterator, **kwargs):
     token_type = token[1]
     token_value = token[0]
 
-    assert token_type == 'FIELD' or token_type == 'INT'
+    assert token_type == 'INT'
 
-    if token_type == 'FIELD':
-        assert action is Draw or action is Discard or action is Silence or action is Destroy
+    amount = parse_int_token(token_value)
 
-        amount = 1
+    token = iterator.next()
 
-    elif token_type == 'INT':
-        if token_value.isdigit():
-            amount = int(token_value)
+    token_type = token[1]
+    token_value = token[0]
 
-        else:
-            amount = word_to_num(token_value)
+    assert token_type == 'FIELD' or token_type == 'TARGET'
 
-        token = iterator.next()
+    if action is Draw or action is Discard:
+        assert token_value.casefold().startswith('card')
 
-        token_type = token[1]
-        token_value = token[0]
+    elif action is Silence or action is Destroy:
+        assert token_value.casefold().startswith('minion')
 
-        assert token_type == 'FIELD' or token_type == 'TARGET'
+    elif action is Heal:
+        assert token_value.casefold() == 'health'
 
-        if action is Draw or action is Discard:
-            assert token_value.casefold().startswith('card')
+    elif action is Deal:
+        assert token_value.casefold() == 'damage'
 
-        elif action is Silence or action is Destroy:
-            assert token_value.casefold().startswith('minion')
+    elif action is Gain:
+        assert token_type == 'MODIFIER' or token_type == 'FIELD'
 
-        elif action is Heal:
-            assert token_value.casefold() == 'health'
-
-        elif action is Deal:
-            assert token_value.casefold() == 'damage'
-
-        elif action is Gain:
-            assert token_value.casefold() == 'armor' # or token_value.casefold() == 'mana crystals'
+        if token_type == 'FIELD':
+            assert token_value.casefold() == 'armor' or token_value.casefold() == 'mana crystal'
 
             if token_value.casefold() == 'armor':
                 action = GainArmor
 
-            """
-            else if token_value == 'mana crystals':
-                action = GainMana()
-            """
+            elif token_value.casefold() == 'mana crystal':
+                action = GainMana
 
-        try:
+        elif token_type == 'MODIFIER':
+            assert token_value.casefold() == 'empty'
+
             token = iterator.next()
 
             token_type = token[1]
             token_value = token[0]
 
-            if token_type == 'MODIFIER':
-                modifier = token_value
+            assert token_type == 'FIELD'
+            assert token_value.casefold() == 'mana crystal'
 
-                try:
-                    token = iterator.next()
+            if token_value == 'mana crystal':
+                action = GainEmptyMana
 
-                    token_type = token[1]
-                    token_value = token[0]
+    try:
+        token = iterator.next()
 
-                    targets = token_value
+        token_type = token[1]
+        token_value = token[0]
 
-                except StopIteration as e:
-                    raise e
+        if token_type == 'MODIFIER':
+            modifier = token_value
 
-                target = globals().get('_'.join((modifier, targets),).upper(), None)
-                assert isinstance(target, SetOpSelector)
+            try:
+                token = iterator.next()
 
-            else:
-                iterator.prev()
+                token_type = token[1]
+                token_value = token[0]
 
-        except StopIteration:
-            pass
+                targets = token_value
+
+            except StopIteration as e:
+                raise e
+
+            target = globals().get('_'.join((modifier, targets),).upper(), None)
+            assert isinstance(target, SetOpSelector)
+
+        else:
+            iterator.prev()
+
+    except StopIteration:
+        pass
 
     if target is None:
-        if action is Draw or action is Discard:
+        if (action is Draw or action is Discard
+                or action is GainEmptyMana or action is GainMana):
             target = CONTROLLER
 
         elif (action is Silence or action is Destroy or
@@ -101,12 +108,23 @@ def parse_action(token, iterator, **kwargs):
         elif action is GainArmor:
             target = FRIENDLY_HERO
 
-
     if action is Draw or action is Discard:
         return action(target) * amount
 
-    elif action is Deal or action is Heal or action is GainArmor:
+    elif (action is Deal or action is Heal or action is GainArmor or action
+          is GainEmptyMana or action is GainMana):
         return action(target, amount)
 
     elif action is Silence or action is Destroy:
         return action(target)
+
+
+def parse_int_token(token):
+    numbers = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+               'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10, 'a': 1, 'an': 1}
+
+    return int(token) if token.isdigit() else numbers[token]
+
+
+def parse_action_token(token):
+    return globals().get(token.lower().capitalize(), None)
