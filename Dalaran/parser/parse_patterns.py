@@ -78,7 +78,7 @@ def parse_action(token, iterator, **kwargs):
         token_value = token[0]
 
         if token_type == 'MODIFIER':
-            modifier = token_value
+            modifiers = [token_value.casefold()]
 
             try:
                 token = iterator.next()
@@ -86,18 +86,26 @@ def parse_action(token, iterator, **kwargs):
                 token_type = token[1]
                 token_value = token[0]
 
+                while token_type == 'MODIFIER':
+                    modifiers.append(token_value.casefold())
+
+                    token = iterator.next()
+
+                    token_type = token[1]
+                    token_value = token[0]
+
                 targets = token_value
 
             except StopIteration as e:
                 raise e
 
-            target = parse_target(modifier, targets)
+            target = parse_target(modifiers, targets)
 
         else:
             iterator.prev()
 
     except StopIteration:
-        pass
+        iterator.prev()
 
     if target is None:
         if (action is Draw or action is Discard
@@ -136,8 +144,11 @@ def parse_action_token(token):
     return action
 
 
-def parse_target(modifier, targets):
-    target = globals().get('_'.join((modifier, targets),).upper(), None)
+def parse_target(modifiers, targets):
+    if len(modifiers) == 2 and 'all' in modifiers:
+        modifiers.remove('all')
+
+    target = globals().get('_'.join(modifiers + [targets]).upper(), None)
     assert isinstance(target, SetOpSelector)
 
     return target

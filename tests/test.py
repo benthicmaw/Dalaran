@@ -87,7 +87,8 @@ class Test_Cards(unittest.TestCase):
 
     def test_targeted_actions(self):
         tokens = lex('Deal 5 Damage', token_exprs)
-        card = parse_card('Bolt Bolt', CardType.SPELL, 3, CardClass.MAGE, tokens)
+        card = parse_card('Bolt Bolt', CardType.SPELL,
+                          3, CardClass.MAGE, tokens)
 
         register_card(card)
 
@@ -121,9 +122,11 @@ class Test_Cards(unittest.TestCase):
 
     def test_area_of_effect_actions(self):
         tokens = lex('Deal 5 Damage to all characters', token_exprs)
-        card_1 = parse_card('Big Splash', CardType.SPELL, 1, CardClass.MAGE, tokens)
+        card_1 = parse_card('Big Splash', CardType.SPELL,
+                            1, CardClass.MAGE, tokens)
 
-        card_2 = parse_card('Placeholder', CardType.MINION, 0, CardClass.NEUTRAL, [], 1, 1)
+        card_2 = parse_card('Placeholder', CardType.MINION,
+                            0, CardClass.NEUTRAL, [], 1, 1)
 
         register_card(card_1)
         register_card(card_2)
@@ -153,7 +156,8 @@ class Test_Cards(unittest.TestCase):
 
     def test_armor(self):
         tokens = lex('Gain 5000 Armor', token_exprs)
-        card = parse_card('Great Wall of China', CardType.SPELL, 0, CardClass.WARRIOR, tokens)
+        card = parse_card('Great Wall of China', CardType.SPELL,
+                          0, CardClass.WARRIOR, tokens)
 
         register_card(card)
 
@@ -168,7 +172,8 @@ class Test_Cards(unittest.TestCase):
 
     def test_leading_target(self):
         tokens = lex('Your opponent draws two cards', token_exprs)
-        card = parse_card('Library', CardType.SPELL, 1, CardClass.DRUID, tokens)
+        card = parse_card('Library', CardType.SPELL,
+                          1, CardClass.DRUID, tokens)
 
         register_card(card)
 
@@ -183,7 +188,8 @@ class Test_Cards(unittest.TestCase):
 
     def test_mana_crystals(self):
         tokens = lex('Gain 9 mana crystals', token_exprs)
-        card = parse_card('Steroids', CardType.SPELL, 0, CardClass.DRUID, tokens)
+        card = parse_card('Steroids', CardType.SPELL,
+                          0, CardClass.DRUID, tokens)
 
         register_card(card)
 
@@ -195,3 +201,31 @@ class Test_Cards(unittest.TestCase):
         steroids.play()
 
         self.assertEqual(game.player1.max_mana, 10)
+
+    def test_multiple_modifier_targeting(self):
+        tokens = lex('Deal 5 Damage to all enemy minions', token_exprs)
+        card_1 = parse_card('Flamewipe', CardType.SPELL,
+                            1, CardClass.MAGE, tokens)
+
+        card_2 = parse_card('Placeholder', CardType.MINION,
+                            0, CardClass.NEUTRAL, [], 1, 1)
+
+        register_card(card_1)
+        register_card(card_2)
+
+        game = prepare_game(CardClass.MAGE, CardClass.MAGE)
+
+        placeholder_1 = game.player1.give(card_2.__name__)
+        placeholder_2 = game.player1.give(card_2.__name__)
+
+        placeholder_1.play()
+        placeholder_2.play()
+
+        game.end_turn()
+
+        flamewipe = game.player2.give(card_1.__name__)
+
+        flamewipe.play()
+
+        self.assertTrue(placeholder_1.dead)
+        self.assertTrue(placeholder_2.dead)
