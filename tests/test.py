@@ -45,7 +45,7 @@ class Test_Cards(unittest.TestCase):
 
         self.assertFalse(charge_boi.can_attack())
 
-    def test_controller_actions(self):
+    def test_number_parsing(self):
         tokens = lex('Draw a Card', token_exprs)
         card_1 = parse_card('a', CardType.SPELL, 2, CardClass.MAGE, tokens)
 
@@ -153,7 +153,7 @@ class Test_Cards(unittest.TestCase):
 
     def test_armor(self):
         tokens = lex('Gain 5000 Armor', token_exprs)
-        card = parse_card('Shield Up', CardType.SPELL, 0, CardClass.WARRIOR, tokens)
+        card = parse_card('Great Wall of China', CardType.SPELL, 0, CardClass.WARRIOR, tokens)
 
         register_card(card)
 
@@ -195,4 +195,3 @@ class Test_Cards(unittest.TestCase):
         steroids.play()
 
         self.assertEqual(game.player1.max_mana, 10)
-

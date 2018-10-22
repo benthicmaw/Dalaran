@@ -11,7 +11,6 @@ def parse_action(token, iterator, **kwargs):
     target = kwargs.get('target', None)
 
     action = parse_action_token(token_value)
-    assert isinstance(action, ActionMeta)
 
     token = iterator.next()
 
@@ -27,25 +26,31 @@ def parse_action(token, iterator, **kwargs):
     token_type = token[1]
     token_value = token[0]
 
-    assert token_type == 'FIELD' or token_type == 'TARGET'
+    assert (token_type == 'FIELD' or token_type == 'MODIFIER' or
+            token_type == 'TARGET')
 
     if action is Draw or action is Discard:
+        assert token_type == 'FIELD'
         assert token_value.casefold().startswith('card')
 
     elif action is Silence or action is Destroy:
+        assert token_type == 'TARGET'
         assert token_value.casefold().startswith('minion')
 
     elif action is Heal:
+        assert token_type == 'FIELD'
         assert token_value.casefold() == 'health'
 
     elif action is Deal:
+        assert token_type == 'FIELD'
         assert token_value.casefold() == 'damage'
 
     elif action is Gain:
         assert token_type == 'MODIFIER' or token_type == 'FIELD'
 
         if token_type == 'FIELD':
-            assert token_value.casefold() == 'armor' or token_value.casefold() == 'mana crystal'
+            assert (token_value.casefold() ==
+                    'armor' or token_value.casefold() == 'mana crystal')
 
             if token_value.casefold() == 'armor':
                 action = GainArmor
@@ -64,8 +69,7 @@ def parse_action(token, iterator, **kwargs):
             assert token_type == 'FIELD'
             assert token_value.casefold() == 'mana crystal'
 
-            if token_value == 'mana crystal':
-                action = GainEmptyMana
+            action = GainEmptyMana
 
     try:
         token = iterator.next()
@@ -87,8 +91,7 @@ def parse_action(token, iterator, **kwargs):
             except StopIteration as e:
                 raise e
 
-            target = globals().get('_'.join((modifier, targets),).upper(), None)
-            assert isinstance(target, SetOpSelector)
+            target = parse_target(modifier, targets)
 
         else:
             iterator.prev()
@@ -127,4 +130,14 @@ def parse_int_token(token):
 
 
 def parse_action_token(token):
-    return globals().get(token.lower().capitalize(), None)
+    action = globals().get(token.lower().capitalize(), None)
+    assert isinstance(action, ActionMeta)
+
+    return action
+
+
+def parse_target(modifier, targets):
+    target = globals().get('_'.join((modifier, targets),).upper(), None)
+    assert isinstance(target, SetOpSelector)
+
+    return target
