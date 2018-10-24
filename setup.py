@@ -3,7 +3,7 @@ import os
 
 setup(
     name='Dalaran',
-    packages=['Dalaran', 'Dalaran.lexer', 'Dalaran.parser'],
+    packages=['Dalaran'],
     version='0.1.0',
     description=' Basic Lexer and Parser for Hearthstone Cards',
     author='Kai Chang',
