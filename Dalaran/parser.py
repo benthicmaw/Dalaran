@@ -21,6 +21,15 @@ def parse_tree(tree):
                 res['play'] += (Hit(TARGET,
                                     string_to_num(sequence.children[1].string)),)
 
+        elif sequence.element.name == 'armor_sequence':
+            if res.get('play') is None:
+                res['play'] = (
+                    GainArmor(CONTROLLER, string_to_num(sequence.children[1].string)),)
+
+            else:
+                res['play'] += (
+                    GainArmor(CONTROLLER, string_to_num(sequence.children[1].string)),)
+
         elif sequence.element.name == 'draw_sequence':
             if res.get('play') is None:
                 res['play'] = (Draw(CONTROLLER) *
@@ -29,5 +38,31 @@ def parse_tree(tree):
             else:
                 res['play'] += (Draw(CONTROLLER) *
                                 string_to_num(sequence.children[1].string),)
+
+        elif sequence.element.name == 'discard_sequence':
+            if res.get('play') is None:
+                res['play'] = (Discard(CONTROLLER) *
+                               string_to_num(sequence.children[1].string),)
+
+            else:
+                res['play'] += (Discard(CONTROLLER) *
+                                string_to_num(sequence.children[1].string),)
+
+        elif sequence.element.name == 'freeze_sequence':
+            if res.get('play') is None:
+                res['play'] = (Freeze(TARGET),)
+
+            else:
+                res['play'] += (Freeze(TARGET),)
+
+        elif sequence.element.name == 'destroy_sequence':
+            if res.get('play') is None:
+                res['play'] = (Destroy(TARGET),)
+
+            else:
+                res['play'] += (Destroy(TARGET),)
+
+        elif sequence.element.name == 'ability_sequence':
+            res[ability_to_enum(sequence.children[0].string)] = True
 
     return res
