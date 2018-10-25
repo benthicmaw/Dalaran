@@ -93,40 +93,10 @@ class Hearthstone_Grammar(Grammar):
 
     ability_sequence = Sequence(ability)
 
+    skip_chars = Regex('\.')
+
     # MAIN
 
     # ID = Regex("[A-Za-z][A-Za-z0-9\']*")
 
-    START = Repeat(Choice(action_sequence, ability_sequence), 0)
-
-
-# Returns properties of a node object as a dictionary:
-def node_props(node, children):
-    return {
-        'start': node.start,
-        'end': node.end,
-        'name': node.element.name if hasattr(node.element, 'name') else None,
-        'element': node.element.__class__.__name__,
-        'string': node.string,
-        'children': children}
-
-
-# Recursive method to get the children of a node object:
-def get_children(children):
-    return [node_props(c, get_children(c.children)) for c in children]
-
-
-# View the parse tree:
-def view_parse_tree(res):
-    start = res.tree.children[0] \
-        if res.tree.children else res.tree
-    return node_props(start, get_children(start.children))
-
-
-if __name__ == '__main__':
-    import json
-
-    hearthstone_grammar = Hearthstone_Grammar()
-    res = hearthstone_grammar.parse('Deal 5 Damage')
-
-    print(json.dumps(view_parse_tree(res), indent=2))
+    START = Repeat(Choice(action_sequence, ability_sequence, skip_chars), 0)
