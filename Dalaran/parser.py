@@ -3,9 +3,7 @@ import re
 from pyleri import *
 
 
-class Numbers(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Numbers:
     number_words = Choice(Keyword('one', ign_case=True), Keyword('two', ign_case=True), Keyword('three', ign_case=True), Keyword('four', ign_case=True), Keyword(
         'five', ign_case=True), Keyword('six', ign_case=True), Keyword('seven', ign_case=True), Keyword('eight', ign_case=True), Keyword('nine', ign_case=True), Keyword('ten', ign_case=True))
 
@@ -17,9 +15,7 @@ class Numbers(Grammar):
     number = Choice(numbers_digits, number_words, special_number_words)
 
 
-class Actions(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Actions:
     destroy = Keyword('destroy', ign_case=True)
     deal = Keyword('deal', ign_case=True)
     draw = Keyword('draw', ign_case=True)
@@ -30,9 +26,7 @@ class Actions(Grammar):
     action = Choice(destroy, deal, draw, freeze, gain, discard)
 
 
-class Abilities(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Abilities:
     spell_damage = Keyword('spell damage', ign_case=True)
 
     charge = Keyword('charge', ign_case=True)
@@ -43,18 +37,14 @@ class Abilities(Grammar):
     ability = Choice(charge, taunt, divine_shield, windfury)
 
 
-class Events(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Events:
     battlecry = Keyword('battlecry:', ign_case=True)
     deathrattle = Keyword('deathrattle:', ign_case=True)
 
     event = Choice(battlecry, deathrattle)
 
 
-class Targets(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Targets:
     character = Choice(Keyword('character', ign_case=True),
                        Keyword('characters', ign_case=True))
 
@@ -67,9 +57,7 @@ class Targets(Grammar):
     target = Choice(character, minion, opponent, owner)
 
 
-class Modifiers(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Modifiers:
     friendly = Keyword('friendly', ign_case=True)
     enemy = Keyword('enemy', ign_case=True)
     all_ = Keyword('all', ign_case=True)
@@ -77,9 +65,7 @@ class Modifiers(Grammar):
     modifier = Choice(friendly, enemy, all_)
 
 
-class Fields(Grammar):
-    RE_KEYWORDS = re.compile('^[A-Za-z]+')
-
+class Fields:
     card = Choice(Keyword('card', ign_case=True),
                   Keyword('cards', ign_case=True))
     damage = Keyword('damage', ign_case=True)
@@ -90,19 +76,20 @@ class Fields(Grammar):
 
 class Sequences(Numbers, Actions, Abilities, Events, Targets,
                 Modifiers, Fields):
-    draw_sequence = Sequence(draw, number, card)
-    discard_sequence = Sequence(discard, number, card)
-    deal_sequence = Sequence(deal, number, damage)
-    destroy_sequence = Sequence(destroy, minion)
-    freeze_sequence = Sequence(freeze, minion)
+    draw_sequence = Sequence(Actions.draw, Numbers.number, Fields.card)
+    discard_sequence = Sequence(Actions.discard, Numbers.number, Fields.card)
+    deal_sequence = Sequence(Actions.deal, Numbers.number, Fields.damage)
+    destroy_sequence = Sequence(Actions.destroy, Targets.minion)
+    freeze_sequence = Sequence(Actions.freeze, Targets.minion)
 
     action_sequence = Choice(draw_sequence, discard_sequence,
                              deal_sequence, destroy_sequence, freeze_sequence)
 
-    ability_sequence = Sequence(ability)
+    ability_sequence = Sequence(Abilities.ability)
 
 
-class Main(Sequences):
-    ID = Regex("[A-Za-z][A-Za-z0-9\']*")
+class Main(Grammar, Sequences):
+    # ID = Regex("[A-Za-z][A-Za-z0-9\']*")
 
-    START = Repeat(Choice(action_sequence, ability_sequence), 0)
+    START = Repeat(Choice(Sequences.action_sequence,
+                          Sequences.ability_sequence), 0)
