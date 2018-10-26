@@ -45,7 +45,7 @@ class Hearthstone_Parser:
         res = {}
 
         res['play'] = (
-            GainArmor(CONTROLLER, string_to_num(node.children[1].string)),)
+            GainArmor(FRIENDLY_HERO, string_to_num(node.children[1].string)),)
 
         return res
 
