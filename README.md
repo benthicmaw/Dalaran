@@ -24,38 +24,19 @@ Install [fireplace](https://github.com/jleclanche/fireplace):
 pip3 install -e git+https://github.com/kajchang/fireplace.git#egg=fireplace
 ```
 
-Install Dalaran:
+Install Dalaran and other requirements:
 ```bash
 pip3 install .
 ```
 
 ## Tests
 
-There's a reasonable amount of test coverage, but more is coming in the future:
+There's a reasonable amount of test coverage, but more is coming in the future.
 
 Run the tests:
 
 ```bash
 python3 -m unittest discover
-```
-
-## Try it Out
-
-Open up a shell for `python3.6` or `python3.7`, now we're going to make a very weak, basic spell:
-```python
->>> from Dalaran.lexer import lex, token_exprs
->>> from Dalaran.parser import parse_card, register_card
->>> from Dalaran.utils import prepare_game
->>> tokens = lex('Deal 10 Damage. Draw 5 Cards.', token_exprs) # tokenize the text
->>> card = parse_card('Weak Spell', 'Spell', 1, 'Mage', tokens) # create the card
->>> register_card(card)
->>> game = prepare_game()
->>> weak_spell = game.player1.give(card.__name__) # give the card to the first player
->>> print(len(game.player1.hand)) # 5
->>> print(game.player1.opponent.hero.health) # 30
->>> weak_spell.play(target=game.player1.opponent.hero) # play the spell
->>> print(len(game.player1.hand)) # 5 + 5 - 1 = 9
->>> print(game.player1.opponent.hero.health) # 30 - 10 = 20
 ```
 
 And that's how you can make and play with your custom hearthstone cards!
