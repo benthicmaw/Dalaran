@@ -1,7 +1,11 @@
+import re
+
 from pyleri import *
 
 
 class Hearthstone_Grammar(Grammar):
+    RE_KEYWORDS = re.compile('^[A-Za-z:]+')
+
     # NUMBERS
 
     number_words = Choice(
@@ -48,8 +52,8 @@ class Hearthstone_Grammar(Grammar):
 
     # EVENTS
 
-    """
     battlecry = Keyword('battlecry:', ign_case=True)
+    """
     deathrattle = Keyword('deathrattle:', ign_case=True)
 
     event = Choice(battlecry, deathrattle)
@@ -116,10 +120,15 @@ class Hearthstone_Grammar(Grammar):
 
     ability_sequence = Sequence(ability)
 
+    battlecry_sequence = Sequence(battlecry, action_sequence)
+
     skip_chars = Regex('\.')
 
     # MAIN
 
     # ID = Regex("[A-Za-z][A-Za-z0-9\']*")
 
-    START = Repeat(Choice(action_sequence, ability_sequence, skip_chars), 0)
+    START = Repeat(Choice(action_sequence,
+                          ability_sequence,
+                          battlecry_sequence,
+                          skip_chars), 0)

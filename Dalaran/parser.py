@@ -1,8 +1,6 @@
 from fireplace.cards.utils import *
 from .utils import *
 
-from pyleri import Optional
-
 
 class Hearthstone_Parser:
     @classmethod
@@ -32,6 +30,11 @@ class Hearthstone_Parser:
     def action_sequence_handler(cls, node):
         return cls.get_sequence_handler(
             node.children[0].element.name)('play')(node.children[0])
+
+    @classmethod
+    def battlecry_sequence_handler(cls, node):
+        return cls.get_sequence_handler(
+            node.children[1].children[0].element.name)('play')(node.children[1].children[0])
 
     @staticmethod
     def deal_sequence_handler(event='play'):
@@ -74,7 +77,7 @@ class Hearthstone_Parser:
         def handler(node, event=event):
             res = {}
 
-            if isinstance(node.children[2].element, Optional):
+            if len(node.children) == 4:
                 res[event] = GainEmptyMana(
                     CONTROLLER, string_to_num(node.children[1].string))
 

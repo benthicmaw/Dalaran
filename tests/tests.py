@@ -44,7 +44,7 @@ class Test_Dalaran(unittest.TestCase):
         self.game = prepare_game(game_class=BaseGame)
 
         cls = self.dalaran.parse_card(
-            'Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 mana crystals')
+            'Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 mana crystals.')
 
         self.dalaran.register_card(cls)
 
@@ -62,7 +62,7 @@ class Test_Dalaran(unittest.TestCase):
         self.game = prepare_game(game_class=BaseGame)
 
         cls = self.dalaran.parse_card(
-            'Empty Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 empty mana crystals')
+            'Empty Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 empty mana crystals.')
 
         self.dalaran.register_card(cls)
 
@@ -75,3 +75,17 @@ class Test_Dalaran(unittest.TestCase):
 
         self.assertEqual(self.game.player1.max_mana, 3)
         self.assertEqual(self.game.player1.mana, 0)
+
+    def test_battlecry(self):
+        cls = self.dalaran.parse_card(
+            'Ping Kid', CardType.MINION, 1, CardClass.NEUTRAL, 'Battlecry: Deal 1 Damage.')
+
+        self.dalaran.register_card(cls)
+
+        ping_kid = self.game.player1.give(cls.__name__)
+
+        self.assertEqual(self.game.player2.hero.health, 30)
+
+        ping_kid.play(target=self.game.player2.hero)
+
+        self.assertEqual(self.game.player2.hero.health, 29)
