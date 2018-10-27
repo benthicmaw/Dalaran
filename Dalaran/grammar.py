@@ -31,10 +31,10 @@ class Hearthstone_Grammar(Grammar):
 
     destroy = Keyword('destroy', ign_case=True)
     deal = Keyword('deal', ign_case=True)
-    draw = Keyword('draw', ign_case=True)
+    draw = Regex('(D|d)raws?')
     freeze = Keyword('freeze', ign_case=True)
-    gain = Keyword('gain', ign_case=True)
-    discard = Keyword('discard', ign_case=True)
+    gain = Regex('(G|g)ains?')
+    discard = Regex('(D|d)iscards?')
     restore = Keyword('restore', ign_case=True)
 
     # action = Choice(destroy, deal, draw, freeze, gain, discard, restore)
@@ -67,8 +67,8 @@ class Hearthstone_Grammar(Grammar):
     minion = Choice(Keyword('minion', ign_case=True),
                     Keyword('minions', ign_case=True))
 
+    your_opponent = Regex('(Y|y)our (O|o)pponent')
     """
-    opponent = Keyword('opponent', ign_case=True)
     owner = Keyword('owner', ign_case=True)
 
     target = Choice(character, minion, opponent, owner)
@@ -109,14 +109,17 @@ class Hearthstone_Grammar(Grammar):
     destroy_sequence = Sequence(destroy, minion)
     freeze_sequence = Sequence(freeze, minion)
 
-    action_sequence = Choice(draw_sequence,
-                             discard_sequence,
+    hero_actions = Choice(
+        armor_sequence, mana_crystal_sequence, discard_sequence, draw_sequence)
+
+    opponent_targeted_sequence = Sequence(your_opponent, hero_actions)
+
+    action_sequence = Choice(hero_actions,
+                             opponent_targeted_sequence,
                              deal_sequence,
-                             mana_crystal_sequence,
                              restore_sequence,
                              destroy_sequence,
-                             freeze_sequence,
-                             armor_sequence)
+                             freeze_sequence)
 
     ability_sequence = Sequence(ability)
 
@@ -131,4 +134,5 @@ class Hearthstone_Grammar(Grammar):
     START = Repeat(Choice(action_sequence,
                           ability_sequence,
                           battlecry_sequence,
+                          opponent_targeted_sequence,
                           skip_chars), 0)

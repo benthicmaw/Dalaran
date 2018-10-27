@@ -89,3 +89,31 @@ class Test_Dalaran(unittest.TestCase):
         ping_kid.play(target=self.game.player2.hero)
 
         self.assertEqual(self.game.player2.hero.health, 29)
+
+    def test_opponent_armor_gain(self):
+        cls = self.dalaran.parse_card(
+            'Armor Gift', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent gains two armor.')
+
+        self.dalaran.register_card(cls)
+
+        armor_gift = self.game.player1.give(cls.__name__)
+
+        self.assertEqual(self.game.player2.hero.armor, 0)
+
+        armor_gift.play()
+
+        self.assertEqual(self.game.player2.hero.armor, 2)
+
+    def test_opponent_card_draw(self):
+        cls = self.dalaran.parse_card(
+            'Neutralize', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent draws two cards.')
+
+        self.dalaran.register_card(cls)
+
+        neutralize = self.game.player1.give(cls.__name__)
+
+        self.assertEqual(len(self.game.player2.hand), 5)
+
+        neutralize.play()
+
+        self.assertEqual(len(self.game.player2.hand), 7)

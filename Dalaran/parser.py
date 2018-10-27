@@ -36,65 +36,86 @@ class Hearthstone_Parser:
         return cls.get_sequence_handler(
             node.children[1].children[0].element.name)('play')(node.children[1].children[0])
 
-    @staticmethod
-    def deal_sequence_handler(event='play'):
+    @classmethod
+    def opponent_targeted_sequence_handler(cls, event='play'):
         def handler(node, event=event):
+            if node.children[1].children[0].element.name == 'armor_sequence':
+                return cls.get_sequence_handler(
+                    node.children[1].children[0].element.name)('play', ENEMY_HERO)(node.children[1].children[0])
+
+            else:
+                return cls.get_sequence_handler(
+                    node.children[1].children[0].element.name)('play', OPPONENT)(node.children[1].children[0])
+
+        return handler
+
+    @classmethod
+    def hero_actions_handler(cls, event='play'):
+        def handler(node, event=event):
+            return cls.get_sequence_handler(
+                node.children[0].element.name)(event)(node.children[0])
+
+        return handler
+
+    @staticmethod
+    def deal_sequence_handler(event='play', target=TARGET):
+        def handler(node, event=event, target=target):
             res = {}
 
             res[event] = (
-                Hit(TARGET, string_to_num(node.children[1].string)),)
+                Hit(target, string_to_num(node.children[1].string)),)
 
             return res
 
         return handler
 
     @staticmethod
-    def restore_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def restore_sequence_handler(event='play', target=TARGET):
+        def handler(node, event=event, target=target):
             res = {}
 
             res[event] = (
-                Heal(TARGET, string_to_num(node.children[1].string)),)
+                Heal(target, string_to_num(node.children[1].string)),)
 
             return res
 
         return handler
 
     @staticmethod
-    def armor_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def armor_sequence_handler(event='play', target=FRIENDLY_HERO):
+        def handler(node, event=event, target=target):
             res = {}
 
             res[event] = (GainArmor(
-                FRIENDLY_HERO, string_to_num(node.children[1].string)),)
+                target, string_to_num(node.children[1].string)),)
 
             return res
 
         return handler
 
     @staticmethod
-    def mana_crystal_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def mana_crystal_sequence_handler(event='play', target=CONTROLLER):
+        def handler(node, event=event, target=target):
             res = {}
 
             if len(node.children) == 4:
                 res[event] = GainEmptyMana(
-                    CONTROLLER, string_to_num(node.children[1].string))
+                    target, string_to_num(node.children[1].string))
 
             else:
                 res[event] = (GainMana(
-                    CONTROLLER, string_to_num(node.children[1].string)),)
+                    target, string_to_num(node.children[1].string)),)
 
             return res
 
         return handler
 
     @staticmethod
-    def draw_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def draw_sequence_handler(event='play', target=CONTROLLER):
+        def handler(node, event=event, target=target):
             res = {}
 
-            res[event] = (Draw(CONTROLLER) *
+            res[event] = (Draw(target) *
                           string_to_num(node.children[1].string),)
 
             return res
@@ -102,11 +123,11 @@ class Hearthstone_Parser:
         return handler
 
     @staticmethod
-    def discard_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def discard_sequence_handler(event='play', target=CONTROLLER):
+        def handler(node, event=event, target=target):
             res = {}
 
-            res[event] = (Discard(CONTROLLER) *
+            res[event] = (Discard(target) *
                           string_to_num(node.children[1].string),)
 
             return res
@@ -114,22 +135,22 @@ class Hearthstone_Parser:
         return handler
 
     @staticmethod
-    def freeze_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def freeze_sequence_handler(event='play', target=TARGET):
+        def handler(node, event=event, target=target):
             res = {}
 
-            res[event] = (Freeze(TARGET),)
+            res[event] = (Freeze(target),)
 
             return res
 
         return handler
 
     @staticmethod
-    def destroy_sequence_handler(event='play'):
-        def handler(node, event=event):
+    def destroy_sequence_handler(event='play', target=TARGET):
+        def handler(node, event=event, target=target):
             res = {}
 
-            res[event] = (Destroy(TARGET),)
+            res[event] = (Destroy(target),)
 
             return res
 
