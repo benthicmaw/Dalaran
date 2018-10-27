@@ -4,8 +4,17 @@ from pyleri import *
 class Hearthstone_Grammar(Grammar):
     # NUMBERS
 
-    number_words = Choice(Keyword('one', ign_case=True), Keyword('two', ign_case=True), Keyword('three', ign_case=True), Keyword('four', ign_case=True), Keyword(
-        'five', ign_case=True), Keyword('six', ign_case=True), Keyword('seven', ign_case=True), Keyword('eight', ign_case=True), Keyword('nine', ign_case=True), Keyword('ten', ign_case=True))
+    number_words = Choice(
+        Keyword('one', ign_case=True),
+        Keyword('two', ign_case=True),
+        Keyword('three', ign_case=True),
+        Keyword('four', ign_case=True),
+        Keyword('five', ign_case=True),
+        Keyword('six', ign_case=True),
+        Keyword('seven', ign_case=True),
+        Keyword('eight', ign_case=True),
+        Keyword('nine', ign_case=True),
+        Keyword('ten', ign_case=True))
 
     special_number_words = Choice(
         Keyword('a', ign_case=True), Keyword('an', ign_case=True))
@@ -22,8 +31,9 @@ class Hearthstone_Grammar(Grammar):
     freeze = Keyword('freeze', ign_case=True)
     gain = Keyword('gain', ign_case=True)
     discard = Keyword('discard', ign_case=True)
+    restore = Keyword('restore', ign_case=True)
 
-    # action = Choice(destroy, deal, draw, freeze, gain, discard)
+    # action = Choice(destroy, deal, draw, freeze, gain, discard, restore)
 
     # ABILITIES
 
@@ -62,6 +72,8 @@ class Hearthstone_Grammar(Grammar):
 
     # MODIFIERS
 
+    empty = Keyword('empty', ign_case=True)
+
     """
     friendly = Keyword('friendly', ign_case=True)
     enemy = Keyword('enemy', ign_case=True)
@@ -76,20 +88,31 @@ class Hearthstone_Grammar(Grammar):
                   Keyword('cards', ign_case=True))
     damage = Keyword('damage', ign_case=True)
     armor = Keyword('armor', ign_case=True)
+    health = Keyword('health', ign_case=True)
+    mana_crystals = Regex('(M|m)ana (C|c)rystals?')
 
-    # field = Choice(card, damage, armor)
+    # field = Choice(card, damage, armor, health)
 
     # SEQUENCES
 
     draw_sequence = Sequence(draw, number, card)
     discard_sequence = Sequence(discard, number, card)
     deal_sequence = Sequence(deal, number, damage)
+    restore_sequence = Sequence(restore, number, health)
     armor_sequence = Sequence(gain, number, armor)
+    mana_crystal_sequence = Sequence(
+        gain, number, Optional(empty), mana_crystals)
     destroy_sequence = Sequence(destroy, minion)
     freeze_sequence = Sequence(freeze, minion)
 
-    action_sequence = Choice(draw_sequence, discard_sequence,
-                             deal_sequence, destroy_sequence, freeze_sequence, armor_sequence)
+    action_sequence = Choice(draw_sequence,
+                             discard_sequence,
+                             deal_sequence,
+                             mana_crystal_sequence,
+                             restore_sequence,
+                             destroy_sequence,
+                             freeze_sequence,
+                             armor_sequence)
 
     ability_sequence = Sequence(ability)
 

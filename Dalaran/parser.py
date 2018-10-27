@@ -1,6 +1,8 @@
 from fireplace.cards.utils import *
 from .utils import *
 
+from pyleri import Optional
+
 
 class Hearthstone_Parser:
     @classmethod
@@ -29,67 +31,115 @@ class Hearthstone_Parser:
     @classmethod
     def action_sequence_handler(cls, node):
         return cls.get_sequence_handler(
-            node.children[0].element.name)(node.children[0])
+            node.children[0].element.name)('play')(node.children[0])
 
     @staticmethod
-    def deal_sequence_handler(node):
-        res = {}
+    def deal_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
 
-        res['play'] = (
-            Hit(TARGET, string_to_num(node.children[1].string)),)
+            res[event] = (
+                Hit(TARGET, string_to_num(node.children[1].string)),)
 
-        return res
+            return res
 
-    @staticmethod
-    def armor_sequence_handler(node):
-        res = {}
-
-        res['play'] = (
-            GainArmor(FRIENDLY_HERO, string_to_num(node.children[1].string)),)
-
-        return res
+        return handler
 
     @staticmethod
-    def draw_sequence_handler(node):
-        res = {}
+    def restore_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
 
-        res['play'] = (Draw(CONTROLLER) *
-                       string_to_num(node.children[1].string),)
+            res[event] = (
+                Heal(TARGET, string_to_num(node.children[1].string)),)
 
-        return res
+            return res
 
-    @staticmethod
-    def discard_sequence_handler(node):
-        res = {}
-
-        res['play'] = (Discard(CONTROLLER) *
-                       string_to_num(node.children[1].string),)
-
-        return res
+        return handler
 
     @staticmethod
-    def freeze_sequence_handler(node):
-        res = {}
+    def armor_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
 
-        res['play'] = (Freeze(TARGET),)
+            res[event] = (GainArmor(
+                FRIENDLY_HERO, string_to_num(node.children[1].string)),)
 
-        return res
+            return res
 
-    @staticmethod
-    def destroy_sequence_handler(node):
-        res = {}
-
-        res['play'] = (Destroy(TARGET),)
-
-        return res
+        return handler
 
     @staticmethod
-    def ability_sequence_handler(node):
-        res = {}
+    def mana_crystal_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
 
-        if res.get('tags') is None:
+            if isinstance(node.children[2].element, Optional):
+                res[event] = GainEmptyMana(
+                    CONTROLLER, string_to_num(node.children[1].string))
+
+            else:
+                res[event] = (GainMana(
+                    CONTROLLER, string_to_num(node.children[1].string)),)
+
+            return res
+
+        return handler
+
+    @staticmethod
+    def draw_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
+
+            res[event] = (Draw(CONTROLLER) *
+                          string_to_num(node.children[1].string),)
+
+            return res
+
+        return handler
+
+    @staticmethod
+    def discard_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
+
+            res[event] = (Discard(CONTROLLER) *
+                          string_to_num(node.children[1].string),)
+
+            return res
+
+        return handler
+
+    @staticmethod
+    def freeze_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
+
+            res[event] = (Freeze(TARGET),)
+
+            return res
+
+        return handler
+
+    @staticmethod
+    def destroy_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
+
+            res[event] = (Destroy(TARGET),)
+
+            return res
+
+        return handler
+
+    @staticmethod
+    def ability_sequence_handler(event='play'):
+        def handler(node, event=event):
+            res = {}
+
             res['tags'] = {}
+            res['tags'][ability_to_enum(sequence.children[0].string)] = True
 
-        res['tags'][ability_to_enum(sequence.children[0].string)] = True
+            return res
 
-        return res
+        return handler
