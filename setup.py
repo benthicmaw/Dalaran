@@ -2,8 +2,8 @@ from setuptools import setup
 import os
 
 setup(
-    name='dalaran',
-    packages=['dalaran'],
+    name='Dalaran',
+    packages=['Dalaran'],
     version='0.1.0',
     description=' Basic Lexer and Parser for Hearthstone Cards',
     author='Kai Chang',
