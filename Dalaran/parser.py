@@ -39,13 +39,17 @@ class Hearthstone_Parser:
     @classmethod
     def opponent_targeted_sequence_handler(cls, event='play'):
         def handler(node, event=event):
-            if node.children[1].children[0].element.name == 'armor_sequence':
-                return cls.get_sequence_handler(
-                    node.children[1].children[0].element.name)('play', ENEMY_HERO)(node.children[1].children[0])
+            handler = cls.get_sequence_handler(
+                node.children[1].children[0].element.name)
 
-            else:
-                return cls.get_sequence_handler(
-                    node.children[1].children[0].element.name)('play', OPPONENT)(node.children[1].children[0])
+            if (handler.__defaults__[
+                    handler.__code__.co_varnames.index('target')] == FRIENDLY_HERO):
+                return handler(
+                    'play', ENEMY_HERO)(node.children[1].children[0])
+
+            elif (handler.__defaults__[
+                    handler.__code__.co_varnames.index('target')] == CONTROLLER):
+                return handler('play', OPPONENT)(node.children[1].children[0])
 
         return handler
 

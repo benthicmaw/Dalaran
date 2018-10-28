@@ -1,6 +1,6 @@
 import unittest
 
-from Dalaran import Dalaran
+from dalaran import Dalaran
 
 from .utils import *
 

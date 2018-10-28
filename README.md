@@ -1,12 +1,12 @@
-# Dalaran
+# dalaran
 
 [![Build Status](https://travis-ci.org/kajchang/Dalaran.svg?branch=master)](https://travis-ci.org/kajchang/Dalaran)
 
-Basic Lexer and Parser for Hearthstone Simulations.
+Lightweight library for parsing Hearthstone cards using Pyleri.
 
-Effectively, this project aims to provide a tool that can "read" Hearthstone cards and generate playable versions of them from their text.
+This library aims to provide a tool that can "read" Hearthstone cards and generate playable versions of them from their text.
 
-In it's current state, the lexer is able to lex cards from the Basic Set or cards that have the same vocabulary. It can parse minions's abilities and basic spell actions and targeting a into a form usable in [fireplace](https://github.com/jleclanche/fireplace), a Python implementation of Hearthstone.
+In it's current state, the grammar parser still has a limited vocabulary. It can parse minions's abilities and basic spell actions and targeting a into a form usable in [fireplace](https://github.com/jleclanche/fireplace), a Python implementation of Hearthstone.
 
 ## Installation
 

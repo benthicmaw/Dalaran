@@ -1,8 +1,8 @@
-from Dalaran.parser import Hearthstone_Parser
-from Dalaran.grammar import Hearthstone_Grammar
+from dalaran.parser import Hearthstone_Parser
+from dalaran.grammar import Hearthstone_Grammar
 
 from fireplace.cards.utils import *
-from .utils import *
+from .utils import deep_merge
 
 
 class Dalaran:

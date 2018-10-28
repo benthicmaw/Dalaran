@@ -34,7 +34,7 @@ class Hearthstone_Grammar(Grammar):
     draw = Regex('(D|d)raws?')
     freeze = Keyword('freeze', ign_case=True)
     gain = Regex('(G|g)ains?')
-    discard = Regex('(D|d)iscards?')
+    discard = Regex('(D|d)iscards? ')
     restore = Keyword('restore', ign_case=True)
 
     # action = Choice(destroy, deal, draw, freeze, gain, discard, restore)
