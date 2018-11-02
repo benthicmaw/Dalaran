@@ -117,3 +117,31 @@ class Test_Dalaran(unittest.TestCase):
         neutralize.play()
 
         self.assertEqual(len(self.game.player2.hand), 7)
+
+    def test_self_damage(self):
+        cls = self.dalaran.parse_card(
+            'Self Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your hero.')
+
+        self.dalaran.register_card(cls)
+
+        self_damage = self.game.player1.give(cls.__name__)
+
+        self.assertEqual(self.game.player1.hero.health, 30)
+
+        self_damage.play()
+
+        self.assertEqual(self.game.player1.hero.health, 25)
+
+    def test_opponent_damage(self):
+        cls = self.dalaran.parse_card(
+            'Opponent Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your opponent.')
+
+        self.dalaran.register_card(cls)
+
+        opponent_damage = self.game.player1.give(cls.__name__)
+
+        self.assertEqual(self.game.player2.hero.health, 30)
+
+        opponent_damage.play()
+
+        self.assertEqual(self.game.player2.hero.health, 25)

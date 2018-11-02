@@ -68,6 +68,7 @@ class Hearthstone_Grammar(Grammar):
                     Keyword('minions', ign_case=True))
 
     your_opponent = Regex('(Y|y)our (O|o)pponent')
+    your_hero = Regex('(Y|y)our (H|h)ero')
     """
     owner = Keyword('owner', ign_case=True)
 
@@ -111,15 +112,18 @@ class Hearthstone_Grammar(Grammar):
 
     hero_actions = Choice(
         armor_sequence, mana_crystal_sequence, discard_sequence, draw_sequence)
+    other_actions = Choice(deal_sequence, restore_sequence,
+                           destroy_sequence, freeze_sequence)
 
     opponent_targeted_sequence = Sequence(your_opponent, hero_actions)
+    hero_targeted_other_action = Sequence(other_actions,
+                                          Keyword('to', ign_case=True),
+                                          Choice(your_opponent, your_hero))
 
-    action_sequence = Choice(hero_actions,
+    action_sequence = Choice(hero_targeted_other_action,
                              opponent_targeted_sequence,
-                             deal_sequence,
-                             restore_sequence,
-                             destroy_sequence,
-                             freeze_sequence)
+                             hero_actions,
+                             other_actions)
 
     ability_sequence = Sequence(ability)
 
@@ -134,5 +138,4 @@ class Hearthstone_Grammar(Grammar):
     START = Repeat(Choice(action_sequence,
                           ability_sequence,
                           battlecry_sequence,
-                          opponent_targeted_sequence,
                           skip_chars), 0)

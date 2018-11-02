@@ -28,6 +28,7 @@ class Hearthstone_Parser:
 
     @classmethod
     def action_sequence_handler(cls, node):
+        print(node.children[0].element.name)
         return cls.get_sequence_handler(
             node.children[0].element.name)('play')(node.children[0])
 
@@ -45,16 +46,37 @@ class Hearthstone_Parser:
             if (handler.__defaults__[
                     handler.__code__.co_varnames.index('target')] == FRIENDLY_HERO):
                 return handler(
-                    'play', ENEMY_HERO)(node.children[1].children[0])
+                    event, ENEMY_HERO)(node.children[1].children[0])
 
             elif (handler.__defaults__[
                     handler.__code__.co_varnames.index('target')] == CONTROLLER):
-                return handler('play', OPPONENT)(node.children[1].children[0])
+                return handler(event, OPPONENT)(node.children[1].children[0])
+
+        return handler
+
+    @classmethod
+    def hero_targeted_other_action_handler(cls, event='play'):
+        def handler(node, event=event):
+            handler = cls.get_sequence_handler(
+                node.children[0].children[0].element.name)
+
+            target_hero = (
+                FRIENDLY_HERO if node.children[2].children[0].element.name == 'your_hero' else ENEMY_HERO)
+
+            return handler(event, target_hero)(node.children[0].children[0])
 
         return handler
 
     @classmethod
     def hero_actions_handler(cls, event='play'):
+        def handler(node, event=event):
+            return cls.get_sequence_handler(
+                node.children[0].element.name)(event)(node.children[0])
+
+        return handler
+
+    @classmethod
+    def other_actions_handler(cls, event='play'):
         def handler(node, event=event):
             return cls.get_sequence_handler(
                 node.children[0].element.name)(event)(node.children[0])
