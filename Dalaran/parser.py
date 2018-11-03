@@ -2,7 +2,7 @@ from fireplace.cards.utils import *
 from .utils import *
 
 
-class Hearthstone_Parser:
+class HearthstoneParser:
     @classmethod
     def parse_tree(cls, tree):
         res = {}
@@ -58,6 +58,15 @@ class Hearthstone_Parser:
         return cls.get_sequence_handler(
             node.children[1].children[0].element.name)('play')(node.children[1].children[0])
 
+    @staticmethod
+    def ability_sequence_handler(node):
+        res = dict()
+
+        res['tags'] = {}
+        res['tags'][ability_to_enum(node.children[0].string)] = True
+
+        return res
+
     @classmethod
     def opponent_targeted_sequence_handler(cls, event='play'):
         def handler(node, event=event):
@@ -106,7 +115,7 @@ class Hearthstone_Parser:
     @staticmethod
     def deal_sequence_handler(event='play', target=TARGET):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (
                 Hit(target, string_to_num(node.children[1].string)),)
@@ -118,7 +127,7 @@ class Hearthstone_Parser:
     @staticmethod
     def restore_sequence_handler(event='play', target=TARGET):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (
                 Heal(target, string_to_num(node.children[1].string)),)
@@ -130,7 +139,7 @@ class Hearthstone_Parser:
     @staticmethod
     def armor_sequence_handler(event='play', target=FRIENDLY_HERO):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (GainArmor(
                 target, string_to_num(node.children[1].string)),)
@@ -142,7 +151,7 @@ class Hearthstone_Parser:
     @staticmethod
     def mana_crystal_sequence_handler(event='play', target=CONTROLLER):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             if len(node.children) == 4:
                 res[event] = GainEmptyMana(
@@ -159,7 +168,7 @@ class Hearthstone_Parser:
     @staticmethod
     def draw_sequence_handler(event='play', target=CONTROLLER):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (Draw(target) *
                           string_to_num(node.children[1].string),)
@@ -171,7 +180,7 @@ class Hearthstone_Parser:
     @staticmethod
     def discard_sequence_handler(event='play', target=CONTROLLER):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (Discard(target) *
                           string_to_num(node.children[1].string),)
@@ -183,7 +192,7 @@ class Hearthstone_Parser:
     @staticmethod
     def freeze_sequence_handler(event='play', target=TARGET):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (Freeze(target),)
 
@@ -194,21 +203,9 @@ class Hearthstone_Parser:
     @staticmethod
     def destroy_sequence_handler(event='play', target=TARGET):
         def handler(node, event=event, target=target):
-            res = {}
+            res = dict()
 
             res[event] = (Destroy(target),)
-
-            return res
-
-        return handler
-
-    @staticmethod
-    def ability_sequence_handler(event='play'):
-        def handler(node, event=event):
-            res = {}
-
-            res['tags'] = {}
-            res['tags'][ability_to_enum(sequence.children[0].string)] = True
 
             return res
 

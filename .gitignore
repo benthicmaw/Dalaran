@@ -4,3 +4,4 @@ dist/
 build/
 pip-delete-this-directory.txt
 *.egg-info
+.idea/

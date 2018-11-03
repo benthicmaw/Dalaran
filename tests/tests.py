@@ -19,9 +19,27 @@ class Test_Dalaran(unittest.TestCase):
     def setUp(self):
         self.game = prepare_game()
 
+    def test_ability(self):
+        cls = self.dalaran.parse_card(
+            'Charger', CardType.MINION, 1, CardClass.NEUTRAL, 'Charge.', 1, 1
+        )
+
+        self.dalaran.register_card(cls)
+
+        charger = self.game.player1.give(cls.__name__)
+
+        charger.play()
+
+        self.assertTrue(charger.can_attack())
+
+        charger.attack(self.game.player2.hero)
+
+        self.assertFalse(charger.can_attack())
+
     def test_action(self):
         cls = self.dalaran.parse_card(
-            'Pong', CardType.SPELL, 1, CardClass.MAGE, 'Deal 1 Damage.')
+            'Pong', CardType.SPELL, 1, CardClass.MAGE, 'Deal 1 Damage.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -35,7 +53,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_multiple_actions(self):
         cls = self.dalaran.parse_card(
-            'Ping Pong', CardType.SPELL, 1, CardClass.WARRIOR, 'Deal 1 Damage. Gain 1 Armor.')
+            'Ping Pong', CardType.SPELL, 1, CardClass.WARRIOR, 'Deal 1 Damage. Gain 1 Armor.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -53,7 +72,8 @@ class Test_Dalaran(unittest.TestCase):
         self.game = prepare_game(game_class=BaseGame)
 
         cls = self.dalaran.parse_card(
-            'Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 mana crystals.')
+            'Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 mana crystals.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -71,7 +91,8 @@ class Test_Dalaran(unittest.TestCase):
         self.game = prepare_game(game_class=BaseGame)
 
         cls = self.dalaran.parse_card(
-            'Empty Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 empty mana crystals.')
+            'Empty Ramp', CardType.SPELL, 1, CardClass.DRUID, 'Gain 2 empty mana crystals.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -87,7 +108,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_battlecry(self):
         cls = self.dalaran.parse_card(
-            'Ping Kid', CardType.MINION, 1, CardClass.NEUTRAL, 'Battlecry: Deal 1 Damage.')
+            'Ping Kid', CardType.MINION, 1, CardClass.NEUTRAL, 'Battlecry: Deal 1 Damage.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -101,7 +123,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_opponent_armor_gain(self):
         cls = self.dalaran.parse_card(
-            'Armor Gift', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent gains two armor.')
+            'Armor Gift', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent gains two armor.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -115,7 +138,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_opponent_card_draw(self):
         cls = self.dalaran.parse_card(
-            'Neutralize', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent draws two cards.')
+            'Neutralize', CardType.SPELL, 1, CardClass.DRUID, 'Your opponent draws two cards.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -129,7 +153,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_self_damage(self):
         cls = self.dalaran.parse_card(
-            'Self Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your hero.')
+            'Self Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your hero.'
+        )
 
         self.dalaran.register_card(cls)
 
@@ -143,7 +168,8 @@ class Test_Dalaran(unittest.TestCase):
 
     def test_opponent_damage(self):
         cls = self.dalaran.parse_card(
-            'Opponent Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your opponent.')
+            'Opponent Damage', CardType.SPELL, 1, CardClass.WARLOCK, 'Deal 5 damage to your opponent.'
+        )
 
         self.dalaran.register_card(cls)
 

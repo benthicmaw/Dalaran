@@ -3,7 +3,8 @@ import re
 from pyleri import *
 
 
-class Hearthstone_Grammar(Grammar):
+class HearthstoneGrammar(Grammar):
+
     RE_KEYWORDS = re.compile('^[A-Za-z:]+')
 
     # NUMBERS

@@ -1,5 +1,5 @@
-from Dalaran.parser import Hearthstone_Parser
-from Dalaran.grammar import Hearthstone_Grammar
+from Dalaran.parser import HearthstoneParser
+from Dalaran.grammar import HearthstoneGrammar
 
 from fireplace.cards.utils import *
 from .utils import deep_merge
@@ -7,8 +7,8 @@ from .utils import deep_merge
 
 class Dalaran:
     def __init__(self,
-                 grammar_class=Hearthstone_Grammar,
-                 parser_class=Hearthstone_Parser):
+                 grammar_class=HearthstoneGrammar,
+                 parser_class=HearthstoneParser):
         self.grammar = grammar_class()
         self.parser = parser_class()
 
