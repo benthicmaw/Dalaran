@@ -66,9 +66,19 @@ class Hearthstone_Grammar(Grammar):
 
     minion = Choice(Keyword('minion', ign_case=True),
                     Keyword('minions', ign_case=True))
+    hero = Keyword('hero', ign_case=True)
 
     your_opponent = Regex('(Y|y)our (O|o)pponent')
     your_hero = Regex('(Y|y)our (H|h)ero')
+
+    target = Choice(your_opponent,
+                    your_hero,
+                    Sequence(
+                       Keyword('a', ign_case=True),
+                       minion),
+                    Sequence(
+                       Keyword('a', ign_case=True),
+                       hero))
     """
     owner = Keyword('owner', ign_case=True)
 
@@ -116,11 +126,11 @@ class Hearthstone_Grammar(Grammar):
                            destroy_sequence, freeze_sequence)
 
     opponent_targeted_sequence = Sequence(your_opponent, hero_actions)
-    hero_targeted_other_action = Sequence(other_actions,
-                                          Keyword('to', ign_case=True),
-                                          Choice(your_opponent, your_hero))
+    targeted_other_action = Sequence(other_actions,
+                                     Keyword('to', ign_case=True),
+                                     target)
 
-    action_sequence = Choice(hero_targeted_other_action,
+    action_sequence = Choice(targeted_other_action,
                              opponent_targeted_sequence,
                              hero_actions,
                              other_actions)

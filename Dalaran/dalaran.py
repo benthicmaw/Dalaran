@@ -12,7 +12,7 @@ class Dalaran:
         self.grammar = grammar_class()
         self.parser = parser_class()
 
-    def parse_card(self, name, type_, cost, class_, text,
+    def parse_card(self, name, type_, cost, class_, text='',
                    atk=None, health=None):
         type_ = type_ if isinstance(
             type_, CardType) else CardType[type_.upper()]

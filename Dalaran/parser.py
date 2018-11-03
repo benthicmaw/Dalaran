@@ -28,9 +28,30 @@ class Hearthstone_Parser:
 
     @classmethod
     def action_sequence_handler(cls, node):
-        print(node.children[0].element.name)
         return cls.get_sequence_handler(
             node.children[0].element.name)('play')(node.children[0])
+
+    @classmethod
+    def targeting_helper(cls, node):
+        node = (
+            node.children[1] if
+            getattr(node.element, 'name', None) is None else
+            node
+        )
+
+        if node.element.name == 'your_hero':
+            target = FRIENDLY_HERO
+
+        elif node.element.name == 'your_opponent':
+            target = ENEMY_HERO
+
+        elif node.element.name == 'minion':
+            target = TARGET
+
+        elif node.element.name == 'hero':
+            target = HERO
+
+        return target
 
     @classmethod
     def battlecry_sequence_handler(cls, node):
@@ -55,15 +76,14 @@ class Hearthstone_Parser:
         return handler
 
     @classmethod
-    def hero_targeted_other_action_handler(cls, event='play'):
+    def targeted_other_action_handler(cls, event='play'):
         def handler(node, event=event):
             handler = cls.get_sequence_handler(
                 node.children[0].children[0].element.name)
 
-            target_hero = (
-                FRIENDLY_HERO if node.children[2].children[0].element.name == 'your_hero' else ENEMY_HERO)
+            target = cls.targeting_helper(node.children[2].children[0])
 
-            return handler(event, target_hero)(node.children[0].children[0])
+            return handler(event, target)(node.children[0].children[0])
 
         return handler
 

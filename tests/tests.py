@@ -6,9 +6,18 @@ from .utils import *
 
 
 class Test_Dalaran(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.dalaran = Dalaran()
+
+        cls = self.dalaran.parse_card(
+            'Placeholder', CardType.MINION, 0, CardClass.NEUTRAL)
+        self.dalaran.register_card(cls)
+        self.placeholder = cls.__name__
+
     def setUp(self):
         self.game = prepare_game()
-        self.dalaran = Dalaran()
 
     def test_action(self):
         cls = self.dalaran.parse_card(
